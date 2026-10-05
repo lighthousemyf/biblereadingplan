@@ -2,58 +2,64 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#4a148c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>灯塔读经计划</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4a148c;
             --primary-light: #6a1b9a;
+            --primary-deep: #2e0b5c;
             --accent: #c9a227;
             --accent-soft: #e8c547;
             --bg: #faf6ef;
-            --bg-soft: #f3ecdc;
+            --bg-soft: #f4eee2;
+            --card: #ffffff;
             --ink: #2a1b3d;
-            --ink-soft: #5d4e6e;
-            --line: rgba(74, 20, 140, 0.12);
-            --shadow: 0 1px 2px rgba(74, 20, 140, 0.04), 0 8px 24px rgba(74, 20, 140, 0.08);
-            --shadow-lg: 0 4px 12px rgba(74, 20, 140, 0.08), 0 24px 48px rgba(74, 20, 140, 0.12);
+            --ink-soft: #6b5c7c;
+            --ink-faint: #a497b3;
+            --line: rgba(74, 20, 140, 0.10);
+            --fresh: #2e9d6a;
+            --silver: #9aa3b0;
+            --bronze: #b5743b;
+            --radius: 18px;
+            --shadow: 0 1px 2px rgba(74, 20, 140, 0.04), 0 10px 30px rgba(74, 20, 140, 0.07);
+            --shadow-lg: 0 4px 12px rgba(74, 20, 140, 0.10), 0 24px 48px rgba(74, 20, 140, 0.16);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        [hidden] { display: none !important; }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        @keyframes lampGlow {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-        }
-        @keyframes fillBar {
-            from { width: 0; }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes lampGlow { 0%, 100% { opacity: .75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+        @keyframes fillBar { from { width: 0; } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46,157,106,.45); } 70% { box-shadow: 0 0 0 6px rgba(46,157,106,0); } 100% { box-shadow: 0 0 0 0 rgba(46,157,106,0); } }
+
+        html { -webkit-text-size-adjust: 100%; }
 
         body {
             font-family: 'Noto Serif SC', 'Songti SC', serif;
             background: var(--bg);
             background-image:
-                radial-gradient(ellipse at top, rgba(201, 162, 39, 0.08), transparent 60%),
-                radial-gradient(ellipse at bottom, rgba(106, 27, 154, 0.06), transparent 60%);
+                radial-gradient(ellipse 120% 50% at top, rgba(201, 162, 39, 0.10), transparent 60%),
+                radial-gradient(ellipse 120% 50% at bottom, rgba(106, 27, 154, 0.07), transparent 60%);
+            background-attachment: fixed;
             color: var(--ink);
             margin: 0;
-            padding: 24px 16px 60px;
+            padding:
+                calc(20px + env(safe-area-inset-top))
+                calc(16px + env(safe-area-inset-right))
+                calc(56px + env(safe-area-inset-bottom))
+                calc(16px + env(safe-area-inset-left));
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             -webkit-font-smoothing: antialiased;
@@ -73,265 +79,496 @@
         .container {
             position: relative;
             width: 100%;
-            max-width: 540px;
+            max-width: 520px;
             z-index: 1;
             animation: fadeIn 0.6s ease-out;
         }
 
+        /* ---------- Header ---------- */
         .header {
             text-align: center;
-            margin-bottom: 32px;
+            margin: 4px 0 22px;
             animation: fadeInUp 0.7s ease-out 0.1s backwards;
         }
         .lamp-icon {
             display: inline-block;
-            font-size: 36px;
-            margin-bottom: 8px;
+            font-size: 34px;
+            margin-bottom: 6px;
             animation: lampGlow 3.5s ease-in-out infinite;
-            filter: drop-shadow(0 0 12px rgba(201, 162, 39, 0.5));
+            filter: drop-shadow(0 0 12px rgba(201, 162, 39, 0.55));
         }
         h1 {
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-            font-weight: 500;
-            font-size: 36px;
-            letter-spacing: 0.02em;
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: 0.12em;
             color: var(--primary);
-            margin: 0 0 6px;
-        }
-        .verse {
-            font-style: italic;
-            color: var(--ink-soft);
-            font-size: 14px;
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-            margin-top: 4px;
-            letter-spacing: 0.01em;
+            margin: 0;
         }
         .verse-divider {
-            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 12px auto 10px;
+            color: var(--accent);
+            font-size: 10px;
+        }
+        .verse-divider::before, .verse-divider::after {
+            content: '';
+            width: 36px;
             height: 1px;
-            background: var(--accent);
-            margin: 12px auto;
+            background: currentColor;
             opacity: 0.6;
         }
+        .verse {
+            color: var(--ink-soft);
+            font-size: 13.5px;
+            line-height: 1.7;
+            margin: 0 auto;
+            max-width: 22em;
+        }
+        .verse cite {
+            display: block;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            color: var(--ink-faint);
+            margin-top: 2px;
+        }
 
+        /* ---------- Cards ---------- */
         .card {
-            background: white;
-            border-radius: 14px;
-            padding: 24px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 22px 20px;
             box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             border: 1px solid var(--line);
             position: relative;
             animation: fadeInUp 0.6s ease-out backwards;
         }
-        .card.delay-1 { animation-delay: 0.2s; }
-        .card.delay-2 { animation-delay: 0.3s; }
-        .card.delay-3 { animation-delay: 0.4s; }
+        .card.delay-1 { animation-delay: 0.15s; }
+        .card.delay-2 { animation-delay: 0.25s; }
+        .card.delay-3 { animation-delay: 0.35s; }
+        .card.delay-4 { animation-delay: 0.45s; }
 
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-sub {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 14px;
+            color: var(--ink-faint);
+            white-space: nowrap;
+        }
+
+        /* ---------- Book hero ---------- */
         .book-card {
-            background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+            background:
+                radial-gradient(circle at 15% 0%, rgba(232, 197, 71, 0.22), transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.08), transparent 40%),
+                linear-gradient(150deg, var(--primary-deep) 0%, var(--primary) 45%, var(--primary-light) 100%);
             color: white;
             text-align: center;
             overflow: hidden;
+            border: none;
+            padding: 26px 20px 20px;
+            box-shadow: var(--shadow-lg);
         }
-        .book-card::before {
+        .book-card::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background-image: radial-gradient(circle at 20% 0%, rgba(255, 215, 0, 0.15), transparent 50%);
+            inset: 8px;
+            border: 1px solid rgba(232, 197, 71, 0.22);
+            border-radius: calc(var(--radius) - 6px);
             pointer-events: none;
         }
-        .book-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.25em;
-            color: var(--accent-soft);
-            margin-bottom: 6px;
-            font-weight: 500;
+        .book-pills {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
         }
-        .book-name {
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-            font-size: 32px;
-            font-weight: 500;
-            margin: 4px 0;
-            letter-spacing: 0.02em;
+        .pill {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            padding: 4px 10px;
+            border-radius: 100px;
+            border: 1px solid rgba(232, 197, 71, 0.45);
+            color: var(--accent-soft);
+            background: rgba(0, 0, 0, 0.12);
         }
         .book-name-zh {
             font-family: 'Noto Serif SC', serif;
-            font-size: 22px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            margin: 2px 0 0;
+            line-height: 1.3;
+        }
+        .book-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-style: italic;
             font-weight: 500;
-            margin-bottom: 10px;
+            opacity: 0.85;
+            margin: 2px 0 4px;
+            letter-spacing: 0.04em;
         }
         .book-meta {
-            font-size: 13px;
-            opacity: 0.85;
-            font-style: italic;
+            font-size: 12px;
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            position: relative;
+            z-index: 1;
+        }
+        .stat + .stat { border-left: 1px solid rgba(255, 255, 255, 0.14); }
+        .stat b {
+            display: block;
             font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.1;
+            color: var(--accent-soft);
+        }
+        .stat span {
+            font-size: 11.5px;
+            opacity: 0.75;
+            letter-spacing: 0.08em;
         }
 
+        /* ---------- Form ---------- */
         .form-card label {
-            display: block;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
             margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 14px;
             color: var(--primary);
             font-weight: 500;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
+        }
+        .form-card label small {
+            font-size: 12px;
+            color: var(--ink-faint);
+            font-weight: 400;
         }
         .input-group { margin-bottom: 16px; }
         input {
             width: 100%;
-            padding: 13px 14px;
+            height: 50px;
+            padding: 0 16px;
             border: 1px solid var(--line);
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 16px; /* 16px stops iOS from zooming in */
             outline: none;
             background: var(--bg-soft);
             color: var(--ink);
             font-family: inherit;
-            transition: all 0.2s ease;
+            transition: border-color .2s, background .2s, box-shadow .2s;
+            -webkit-appearance: none;
+            appearance: none;
         }
         input:focus {
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 3px rgba(74, 20, 140, 0.08);
+            box-shadow: 0 0 0 4px rgba(74, 20, 140, 0.08);
         }
-        input::placeholder { color: #a89db8; }
+        input::placeholder { color: var(--ink-faint); }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
-        button.btn-submit {
+        .me-hint {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.6;
+            animation: fadeIn .3s ease-out;
+        }
+        .me-hint b { color: var(--primary); font-weight: 600; }
+        .me-hint button {
+            border: none;
+            background: rgba(201, 162, 39, 0.16);
+            color: var(--primary);
+            font: inherit;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .stepper {
+            display: grid;
+            grid-template-columns: 50px 1fr 50px;
+            gap: 8px;
+        }
+        .stepper input {
+            text-align: center;
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .stepper input::placeholder { font-size: 16px; font-family: 'Noto Serif SC', serif; font-weight: 400; }
+        .step {
+            height: 50px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: white;
+            color: var(--primary);
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background .15s, transform .1s;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        .step:active { background: var(--bg-soft); transform: scale(0.95); }
+
+        .btn-submit {
             width: 100%;
-            padding: 14px;
-            background: var(--primary);
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 12px;
+            font-size: 16px;
             font-family: inherit;
             font-weight: 500;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.12em;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: transform .2s, box-shadow .2s, opacity .2s;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 6px 16px rgba(74, 20, 140, 0.22);
+            touch-action: manipulation;
         }
-        button.btn-submit::before {
+        .btn-submit::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
             transform: translateX(-100%);
-            transition: transform 0.5s ease;
+            transition: transform 0.6s ease;
         }
-        button.btn-submit:hover::before { transform: translateX(100%); }
-        button.btn-submit:hover {
-            background: var(--primary-light);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(74, 20, 140, 0.25);
+        @media (hover: hover) {
+            .btn-submit:hover::before { transform: translateX(100%); }
+            .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(74, 20, 140, 0.28); }
         }
-        button.btn-submit:active { transform: translateY(0); }
-        button:disabled {
-            background: #b5a8c4 !important;
-            cursor: not-allowed;
-            transform: none !important;
-        }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .section-title {
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-            font-size: 22px;
-            font-weight: 500;
-            color: var(--primary);
-            margin: 0 0 16px;
+        .continue-link {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            height: 48px;
+            border-radius: 12px;
+            border: 1px dashed rgba(201, 162, 39, 0.7);
+            background: rgba(232, 197, 71, 0.08);
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            transition: background .2s;
         }
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--line);
-        }
+        .continue-link:active { background: rgba(232, 197, 71, 0.2); }
 
+        /* ---------- Recent activity ---------- */
+        .recent {
+            background: var(--bg-soft);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+        .recent-label {
+            font-size: 12px;
+            color: var(--ink-soft);
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .recent-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -12px;
+            padding: 0 12px 2px;
+        }
+        .recent-chips::-webkit-scrollbar { display: none; }
+        .chip {
+            flex: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 100px;
+            padding: 5px 11px 5px 9px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .chip .chip-time { color: var(--ink-faint); font-size: 12px; }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--ink-faint);
+            flex: none;
+            display: inline-block;
+        }
+        .dot.fresh { background: var(--fresh); animation: pulse 2s infinite; }
+
+        /* ---------- Leaderboard ---------- */
         .user-card {
             background: var(--bg-soft);
-            border-left: 3px solid var(--primary-light);
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.4s ease-out backwards;
-        }
-        .user-card:hover {
-            transform: translateX(2px);
-            box-shadow: 0 2px 8px rgba(74, 20, 140, 0.08);
-        }
-        .user-card.completed {
-            background: linear-gradient(135deg, #4a148c, #6a1b9a);
-            color: white;
-            border-left: 3px solid var(--accent);
+            padding: 12px 14px 13px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            border: 1px solid transparent;
             position: relative;
             overflow: hidden;
+        }
+        .animate-in .user-card { animation: fadeInUp 0.4s ease-out backwards; }
+        .user-card.is-me { border-color: rgba(201, 162, 39, 0.65); background: #fbf6e6; }
+        .user-card.completed {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-color: transparent;
         }
         .user-card.completed::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.15), transparent);
+            background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.16), transparent);
             background-size: 200% 100%;
             animation: shimmer 4s infinite linear;
             pointer-events: none;
         }
-        .user-card.completed .progress-container { background: rgba(255, 255, 255, 0.2); }
-        .user-card.completed .progress-bar { background: var(--accent-soft); }
-        .user-card.completed .chapter-count { color: var(--accent-soft); }
+        .user-card.completed.is-me { box-shadow: inset 0 0 0 2px var(--accent-soft); }
 
         .rank-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 8px;
+            position: relative;
         }
         .rank-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            flex: none;
             font-family: 'Cormorant Garamond', serif;
-            font-size: 22px;
-            font-weight: 500;
-            color: var(--accent);
-            min-width: 24px;
-            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
             font-style: italic;
+            color: var(--ink-soft);
         }
-        .completed .rank-num { color: var(--accent-soft); }
+        .rank-num.r1 { background: linear-gradient(135deg, #f4d77a, var(--accent)); color: #4a3200; font-style: normal; }
+        .rank-num.r2 { background: linear-gradient(135deg, #e3e7ec, var(--silver)); color: #2f3640; font-style: normal; }
+        .rank-num.r3 { background: linear-gradient(135deg, #e6b585, var(--bronze)); color: #3f2109; font-style: normal; }
+        .completed .rank-num:not(.r1):not(.r2):not(.r3) { color: var(--accent-soft); }
+
+        .user-main { flex: 1; min-width: 0; }
         .user-name {
-            flex: 1;
             font-weight: 500;
             font-size: 16px;
-        }
-        .chapter-count {
-            font-size: 13px;
-            color: var(--ink-soft);
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-            font-style: italic;
-        }
-        .progress-container {
-            background: rgba(74, 20, 140, 0.1);
-            border-radius: 100px;
-            height: 6px;
+            line-height: 1.35;
             overflow: hidden;
-            margin-left: 36px;
-            width: calc(100% - 36px);
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+        .me-tag {
+            display: inline-block;
+            font-size: 10.5px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            border-radius: 4px;
+            background: var(--accent);
+            color: white;
+            vertical-align: 2px;
+            letter-spacing: 0.05em;
+        }
+        .user-time {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--ink-faint);
+            margin-top: 2px;
+        }
+        .completed .user-time { color: rgba(255, 255, 255, 0.65); }
+        .chapter-count {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .chapter-count small { font-size: 14px; color: var(--ink-faint); font-weight: 500; }
+        .completed .chapter-count { color: var(--accent-soft); font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; }
+
+        .progress-container {
+            background: rgba(74, 20, 140, 0.09);
+            border-radius: 100px;
+            height: 5px;
+            overflow: hidden;
+            margin: 10px 0 0 42px;
+            position: relative;
+        }
+        .completed .progress-container { background: rgba(255, 255, 255, 0.2); }
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--primary-light), var(--accent));
             border-radius: 100px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fillBar 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .animate-in .progress-bar { animation: fillBar 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .completed .progress-bar { background: var(--accent-soft); }
 
+        /* ---------- Chapters ---------- */
         .chapter-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
             gap: 8px;
         }
+        .chapter-grid.collapsed .chapter-link:nth-child(n+31) { display: none; }
         .chapter-link {
             aspect-ratio: 1;
             display: flex;
@@ -339,128 +576,201 @@
             justify-content: center;
             background: var(--bg-soft);
             border: 1px solid var(--line);
-            border-radius: 8px;
+            border-radius: 10px;
             text-decoration: none;
             color: var(--primary);
             font-family: 'Cormorant Garamond', serif;
-            font-size: 18px;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-size: 19px;
+            font-weight: 600;
+            transition: background .2s, color .2s, transform .15s, box-shadow .2s;
             position: relative;
+            touch-action: manipulation;
         }
-        .chapter-link:hover {
+        .chapter-link:active { transform: scale(0.94); }
+        @media (hover: hover) {
+            .chapter-link:hover {
+                background: var(--primary);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(74, 20, 140, 0.25);
+                border-color: var(--primary);
+            }
+        }
+        .chapter-link.read {
+            background: rgba(74, 20, 140, 0.08);
+            color: var(--ink-faint);
+        }
+        .chapter-link.read::after {
+            content: '✓';
+            position: absolute;
+            top: 3px;
+            right: 5px;
+            font-size: 10px;
+            font-family: system-ui, sans-serif;
+            color: var(--accent);
+        }
+        .chapter-link.next {
             background: var(--primary);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 20, 140, 0.25);
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.45);
         }
-        .chapter-link::after {
-            content: '';
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 1px;
-            background: currentColor;
-            transition: width 0.2s ease;
+        .expand-btn {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            height: 44px;
+            border: 1px solid var(--line);
+            background: white;
+            border-radius: 12px;
+            color: var(--primary);
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
         }
-        .chapter-link:hover::after { width: 16px; }
-
         .chapter-source {
             font-size: 12px;
-            color: var(--ink-soft);
+            color: var(--ink-faint);
             text-align: center;
             margin-top: 14px;
-            font-style: italic;
-            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
         }
 
-        .loading {
+        .loading, .empty {
             text-align: center;
             color: var(--ink-soft);
-            padding: 24px;
-            font-style: italic;
-            font-family: 'Cormorant Garamond', serif;
+            padding: 24px 8px;
+            font-size: 14px;
         }
 
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--ink-faint);
+            margin-top: 8px;
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            font-style: italic;
+        }
+
+        /* ---------- Toast ---------- */
         .toast {
             position: fixed;
-            bottom: 24px;
+            bottom: calc(20px + env(safe-area-inset-bottom));
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
+            transform: translateX(-50%) translateY(140px);
+            max-width: calc(100% - 32px);
             background: var(--ink);
             color: white;
-            padding: 12px 24px;
+            padding: 13px 22px;
             border-radius: 100px;
             font-size: 14px;
+            text-align: center;
             box-shadow: var(--shadow-lg);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 1000;
             font-weight: 500;
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
-        .toast.success { background: linear-gradient(135deg, #4a148c, #6a1b9a); }
+        .toast.success { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
         .toast.error { background: #c62828; }
 
-        @media (max-width: 480px) {
-            h1 { font-size: 30px; }
-            .book-name { font-size: 26px; }
-            .card { padding: 20px; }
-            .chapter-grid { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; }
-            .chapter-link { font-size: 16px; }
+        @media (min-width: 560px) {
+            body { padding-top: 40px; }
+            h1 { font-size: 32px; }
+            .card { padding: 26px; }
+            .book-name-zh { font-size: 36px; }
+        }
+        @media (max-width: 360px) {
+            .book-name-zh { font-size: 27px; }
+            .stat b { font-size: 24px; }
+            .chapter-grid { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
+    <header class="header">
         <div class="lamp-icon">🪔</div>
         <h1>灯塔读经计划</h1>
-        <div class="verse-divider"></div>
-        <div class="verse">"你的话是我脚前的灯，路上的光" — 诗篇 119:105</div>
-    </div>
+        <div class="verse-divider">✦</div>
+        <p class="verse">你的话是我脚前的灯，是我路上的光。<cite>— 诗篇 119:105</cite></p>
+    </header>
 
-    <!-- Active Book Card -->
-    <div class="card book-card delay-1">
-        <div class="book-label">本期共读 · This Cycle</div>
-        <div class="book-name" id="book-name-en">John</div>
-        <div class="book-name-zh" id="book-name-zh">约翰福音</div>
-        <div class="book-meta" id="book-meta">21 chapters · 新标点和合本</div>
-    </div>
+    <!-- Active Book -->
+    <section class="card book-card delay-1">
+        <div class="book-pills">
+            <span class="pill">本期共读</span>
+            <span class="pill" id="testament-pill">新约</span>
+        </div>
+        <div class="book-name-zh" id="book-name-zh">—</div>
+        <div class="book-name" id="book-name-en">—</div>
+        <div class="book-meta" id="book-meta">新标点和合本</div>
+        <div class="stats">
+            <div class="stat"><b id="stat-readers">–</b><span>人参与</span></div>
+            <div class="stat"><b id="stat-finished">–</b><span>人读完</span></div>
+            <div class="stat"><b id="stat-avg">–</b><span>平均进度</span></div>
+        </div>
+    </section>
 
-    <!-- Form -->
-    <div class="card form-card delay-2">
-        <div class="input-group">
-            <label for="username">名字 <span style="opacity:0.6;font-weight:400">（请保持一致）</span></label>
-            <input type="text" id="username" placeholder="例如：Sam">
+    <!-- Check-in form -->
+    <section class="card form-card delay-2">
+        <div class="section-head">
+            <h2 class="section-title">✍️ 打卡</h2>
+            <span class="section-sub">Check in</span>
         </div>
         <div class="input-group">
-            <label for="chapter">已完成章数 <span id="chapter-range" style="opacity:0.6;font-weight:400">(1-21)</span></label>
-            <input type="number" id="chapter" min="1" max="21" placeholder="你读到第几章了？">
+            <label for="username">你的名字 <small>每次请用同一个名字</small></label>
+            <input type="text" id="username" list="name-list" placeholder="例如：Sam"
+                   autocomplete="off" autocapitalize="words" enterkeyhint="next">
+            <datalist id="name-list"></datalist>
+            <div class="me-hint" id="me-hint" hidden></div>
+        </div>
+        <div class="input-group">
+            <label for="chapter">读到第几章 <small id="chapter-range">(1-21)</small></label>
+            <div class="stepper">
+                <button type="button" class="step" id="minusBtn" aria-label="减一章">−</button>
+                <input type="number" id="chapter" inputmode="numeric" pattern="[0-9]*" min="1"
+                       placeholder="章数" enterkeyhint="done">
+                <button type="button" class="step" id="plusBtn" aria-label="加一章">+</button>
+            </div>
         </div>
         <button id="submitBtn" class="btn-submit">更新进度</button>
-    </div>
+        <a id="continue-link" class="continue-link" target="_blank" rel="noopener noreferrer" hidden></a>
+    </section>
 
     <!-- Leaderboard -->
-    <div class="card delay-3">
-        <h2 class="section-title">🏆 排行榜</h2>
-        <div id="leaderboard-list">
-            <div class="loading">正在加载数据...</div>
+    <section class="card delay-3">
+        <div class="section-head">
+            <h2 class="section-title">🏆 排行榜</h2>
+            <span class="section-sub">Leaderboard</span>
         </div>
-    </div>
+        <div class="recent" id="recent" hidden>
+            <div class="recent-label"><span class="dot fresh"></span>最近打卡</div>
+            <div class="recent-chips" id="recent-chips"></div>
+        </div>
+        <div id="leaderboard-list">
+            <div class="loading">正在加载数据…</div>
+        </div>
+    </section>
 
-    <!-- Chapter Links -->
-    <div class="card delay-3">
-        <h2 class="section-title">📖 阅读章节</h2>
+    <!-- Chapters -->
+    <section class="card delay-4">
+        <div class="section-head">
+            <h2 class="section-title">📖 阅读章节</h2>
+            <span class="section-sub" id="chapter-sub"></span>
+        </div>
         <div class="chapter-grid" id="chapter-grid"></div>
-        <div class="chapter-source">点击章节，在 YouVersion 中阅读 · 中文和合本</div>
-    </div>
+        <button type="button" class="expand-btn" id="expandBtn" hidden></button>
+        <div class="chapter-source">点击章节，在 YouVersion 中阅读 · 新标点和合本</div>
+    </section>
+
+    <div class="footer">Soli Deo Gloria</div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -470,11 +780,55 @@
     // ============================================================
     // 📌 ACTIVE BOOK CONFIG — change this for each new cycle
     // ============================================================
-    // Just change `activeBookKey` to switch the cycle.
-    // Available keys are below in NT_BOOKS (matches YouVersion's OSIS codes).
+    // Change `activeBookKey` to any key from OT_BOOKS or NT_BOOKS below
+    // (they match YouVersion's book codes), e.g. "GEN", "PSA", "ROM".
     // ============================================================
-    const activeBookKey = "ACT"; // ← change me each cycle (e.g. "MAT", "ROM", "REV")
+    const activeBookKey = "ACT"; // ← change me each cycle
 
+    // 旧约 Old Testament — 39 books
+    const OT_BOOKS = {
+        GEN:  { en: "Genesis",          zh: "创世记",         chapters: 50  },
+        EXO:  { en: "Exodus",           zh: "出埃及记",       chapters: 40  },
+        LEV:  { en: "Leviticus",        zh: "利未记",         chapters: 27  },
+        NUM:  { en: "Numbers",          zh: "民数记",         chapters: 36  },
+        DEU:  { en: "Deuteronomy",      zh: "申命记",         chapters: 34  },
+        JOS:  { en: "Joshua",           zh: "约书亚记",       chapters: 24  },
+        JDG:  { en: "Judges",           zh: "士师记",         chapters: 21  },
+        RUT:  { en: "Ruth",             zh: "路得记",         chapters: 4   },
+        "1SA":{ en: "1 Samuel",         zh: "撒母耳记上",     chapters: 31  },
+        "2SA":{ en: "2 Samuel",         zh: "撒母耳记下",     chapters: 24  },
+        "1KI":{ en: "1 Kings",          zh: "列王纪上",       chapters: 22  },
+        "2KI":{ en: "2 Kings",          zh: "列王纪下",       chapters: 25  },
+        "1CH":{ en: "1 Chronicles",     zh: "历代志上",       chapters: 29  },
+        "2CH":{ en: "2 Chronicles",     zh: "历代志下",       chapters: 36  },
+        EZR:  { en: "Ezra",             zh: "以斯拉记",       chapters: 10  },
+        NEH:  { en: "Nehemiah",         zh: "尼希米记",       chapters: 13  },
+        EST:  { en: "Esther",           zh: "以斯帖记",       chapters: 10  },
+        JOB:  { en: "Job",              zh: "约伯记",         chapters: 42  },
+        PSA:  { en: "Psalms",           zh: "诗篇",           chapters: 150 },
+        PRO:  { en: "Proverbs",         zh: "箴言",           chapters: 31  },
+        ECC:  { en: "Ecclesiastes",     zh: "传道书",         chapters: 12  },
+        SNG:  { en: "Song of Songs",    zh: "雅歌",           chapters: 8   },
+        ISA:  { en: "Isaiah",           zh: "以赛亚书",       chapters: 66  },
+        JER:  { en: "Jeremiah",         zh: "耶利米书",       chapters: 52  },
+        LAM:  { en: "Lamentations",     zh: "耶利米哀歌",     chapters: 5   },
+        EZK:  { en: "Ezekiel",          zh: "以西结书",       chapters: 48  },
+        DAN:  { en: "Daniel",           zh: "但以理书",       chapters: 12  },
+        HOS:  { en: "Hosea",            zh: "何西阿书",       chapters: 14  },
+        JOL:  { en: "Joel",             zh: "约珥书",         chapters: 3   },
+        AMO:  { en: "Amos",             zh: "阿摩司书",       chapters: 9   },
+        OBA:  { en: "Obadiah",          zh: "俄巴底亚书",     chapters: 1   },
+        JON:  { en: "Jonah",            zh: "约拿书",         chapters: 4   },
+        MIC:  { en: "Micah",            zh: "弥迦书",         chapters: 7   },
+        NAM:  { en: "Nahum",            zh: "那鸿书",         chapters: 3   },
+        HAB:  { en: "Habakkuk",         zh: "哈巴谷书",       chapters: 3   },
+        ZEP:  { en: "Zephaniah",        zh: "西番雅书",       chapters: 3   },
+        HAG:  { en: "Haggai",           zh: "哈该书",         chapters: 2   },
+        ZEC:  { en: "Zechariah",        zh: "撒迦利亚书",     chapters: 14  },
+        MAL:  { en: "Malachi",          zh: "玛拉基书",       chapters: 4   }
+    };
+
+    // 新约 New Testament — 27 books
     const NT_BOOKS = {
         MAT:  { en: "Matthew",          zh: "马太福音",       chapters: 28 },
         MRK:  { en: "Mark",             zh: "马可福音",       chapters: 16 },
@@ -505,6 +859,10 @@
         REV:  { en: "Revelation",       zh: "启示录",         chapters: 22 }
     };
 
+    const BIBLE_BOOKS = {};
+    for (const [k, v] of Object.entries(OT_BOOKS)) BIBLE_BOOKS[k] = { ...v, testament: "OT" };
+    for (const [k, v] of Object.entries(NT_BOOKS)) BIBLE_BOOKS[k] = { ...v, testament: "NT" };
+
     // YouVersion bible.com URL — version 46 = CUNPSS (新标点和合本简体)
     // Format: https://www.bible.com/bible/46/JHN.3.CUNPSS
     const YOUVERSION_VERSION_ID = 46;
@@ -513,10 +871,15 @@
         return `https://www.bible.com/bible/${YOUVERSION_VERSION_ID}/${bookKey}.${chapter}.${YOUVERSION_VERSION_CODE}`;
     }
 
-    const activeBook = NT_BOOKS[activeBookKey];
-    if (!activeBook) console.error(`Unknown book key: ${activeBookKey}`);
+    const activeBook = BIBLE_BOOKS[activeBookKey];
+    if (!activeBook) {
+        document.body.innerHTML = `<p style="padding:40px;text-align:center">未知书卷代码：${activeBookKey}</p>`;
+        throw new Error(`Unknown book key: ${activeBookKey}`);
+    }
+    const MAX = activeBook.chapters;
 
     // Each book gets its own Firestore collection so cycles don't bleed into each other
+    // (same naming as before, so existing progress is kept)
     const COLLECTION_NAME = `bible_progress_${activeBookKey}`;
 
     // ============================================================
@@ -536,66 +899,144 @@
     const db = getFirestore(app);
 
     // ============================================================
-    // Render header / form for the active book
+    // Elements & state
     // ============================================================
-    document.getElementById('book-name-en').textContent = activeBook.en;
-    document.getElementById('book-name-zh').textContent = activeBook.zh;
-    document.getElementById('book-meta').textContent = `${activeBook.chapters} chapters · 新标点和合本`;
-    document.getElementById('chapter-range').textContent = `(1-${activeBook.chapters})`;
-    document.getElementById('chapter').max = activeBook.chapters;
+    const $ = (id) => document.getElementById(id);
+    const nameInput = $('username');
+    const chapterInput = $('chapter');
+    const submitBtn = $('submitBtn');
+    const grid = $('chapter-grid');
+
+    let users = [];
+    let loaded = false;
+    let firstRender = true;
+
+    const NAME_KEY = 'lighthouse_reader_name';
+    try { const saved = localStorage.getItem(NAME_KEY); if (saved) nameInput.value = saved; } catch (_) {}
+
+    // ============================================================
+    // Render header for the active book
+    // ============================================================
+    $('book-name-en').textContent = activeBook.en;
+    $('book-name-zh').textContent = activeBook.zh;
+    $('testament-pill').textContent = activeBook.testament === 'OT' ? '旧约 · Old Testament' : '新约 · New Testament';
+    $('book-meta').textContent = `共 ${MAX} 章 · 新标点和合本`;
+    $('chapter-range').textContent = `(1-${MAX})`;
+    $('chapter-sub').textContent = `${MAX} chapters`;
+    chapterInput.max = MAX;
     document.title = `${activeBook.zh} · 灯塔读经计划`;
 
     // ============================================================
-    // Build the chapter link grid
+    // Chapter link grid (long books collapse to 30 at first)
     // ============================================================
-    const grid = document.getElementById('chapter-grid');
-    for (let i = 1; i <= activeBook.chapters; i++) {
+    for (let i = 1; i <= MAX; i++) {
         const a = document.createElement('a');
         a.href = chapterUrl(activeBookKey, i);
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.className = 'chapter-link';
         a.textContent = i;
+        a.dataset.ch = i;
         a.style.animation = 'fadeInUp 0.4s ease-out backwards';
-        a.style.animationDelay = `${0.4 + i * 0.02}s`;
+        a.style.animationDelay = `${0.45 + Math.min(i, 30) * 0.015}s`;
         grid.appendChild(a);
+    }
+    const COLLAPSE_AT = 30;
+    const expandBtn = $('expandBtn');
+    if (MAX > COLLAPSE_AT + 6) {
+        grid.classList.add('collapsed');
+        expandBtn.hidden = false;
+        expandBtn.textContent = `显示全部 ${MAX} 章 ▾`;
+        expandBtn.addEventListener('click', () => {
+            const collapsed = grid.classList.toggle('collapsed');
+            expandBtn.textContent = collapsed ? `显示全部 ${MAX} 章 ▾` : '收起 ▴';
+        });
     }
 
     // ============================================================
-    // Toast helper (replaces ugly alerts)
+    // Helpers
     // ============================================================
-    const toastEl = document.getElementById('toast');
+    const toastEl = $('toast');
     let toastTimer;
     function toast(msg, type = 'success') {
         clearTimeout(toastTimer);
         toastEl.textContent = msg;
         toastEl.className = `toast ${type} show`;
-        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+        }[c]));
+    }
+
+    function tsMs(ts) {
+        if (!ts) return null;
+        if (typeof ts.toMillis === 'function') return ts.toMillis();
+        if (typeof ts.seconds === 'number') return ts.seconds * 1000;
+        return null;
+    }
+    const sortMs = (ts) => tsMs(ts) ?? Number.MAX_SAFE_INTEGER;
+    const lastActive = (u) => tsMs(u.lastUpdatedAt) ?? tsMs(u.createdAt);
+
+    const DAY = 24 * 60 * 60 * 1000;
+    function relTime(ms) {
+        if (!ms) return '';
+        const diff = Date.now() - ms;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return '刚刚';
+        if (mins < 60) return `${mins} 分钟前`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs} 小时前`;
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const then = new Date(ms); then.setHours(0, 0, 0, 0);
+        const days = Math.round((today - then) / DAY);
+        if (days <= 1) return '昨天';
+        if (days < 7) return `${days} 天前`;
+        const d = new Date(ms);
+        return `${d.getMonth() + 1}月${d.getDate()}日`;
+    }
+    const isFresh = (ms) => ms && (Date.now() - ms) < DAY;
+
+    function findMe() {
+        const name = nameInput.value.trim();
+        if (!name) return null;
+        return users.find(u => u.name === name) || null;
     }
 
     // ============================================================
-    // Submit handler
+    // Stepper
     // ============================================================
-    const submitBtn = document.getElementById('submitBtn');
+    function stepChapter(delta) {
+        const me = findMe();
+        let v = parseInt(chapterInput.value);
+        if (isNaN(v)) v = me ? me.chapters : 0;
+        v = Math.min(MAX, Math.max(1, v + delta));
+        chapterInput.value = v;
+    }
+    $('plusBtn').addEventListener('click', () => stepChapter(1));
+    $('minusBtn').addEventListener('click', () => stepChapter(-1));
+
+    // ============================================================
+    // Submit
+    // ============================================================
     submitBtn.addEventListener('click', updateProgress);
-    document.getElementById('chapter').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') updateProgress();
-    });
+    chapterInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { chapterInput.blur(); updateProgress(); } });
+    nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') chapterInput.focus(); });
+    nameInput.addEventListener('input', renderAll);
 
     async function updateProgress() {
-        const nameInput = document.getElementById('username');
-        const chapterInput = document.getElementById('chapter');
         const name = nameInput.value.trim();
         const chapters = parseInt(chapterInput.value);
-        const max = activeBook.chapters;
 
-        if (!name) return toast("请输入名字", 'error');
-        if (isNaN(chapters) || chapters < 1 || chapters > max) {
-            return toast(`请输入 1-${max} 之间的数字`, 'error');
+        if (!name) { nameInput.focus(); return toast("请输入名字", 'error'); }
+        if (isNaN(chapters) || chapters < 1 || chapters > MAX) {
+            return toast(`请输入 1-${MAX} 之间的数字`, 'error');
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerText = "更新中...";
+        submitBtn.textContent = "更新中…";
 
         try {
             const userQuery = query(collection(db, COLLECTION_NAME), where("name", "==", name));
@@ -621,82 +1062,179 @@
                 });
             }
 
+            try { localStorage.setItem(NAME_KEY, name); } catch (_) {}
             chapterInput.value = '';
-            toast(chapters >= max ? "🎉 恭喜读完！愿主祝福你" : "更新成功！", 'success');
+            toast(chapters >= MAX ? "🎉 恭喜读完！愿主祝福你" : `已更新：第 ${chapters} 章 ✓`, 'success');
 
         } catch (e) {
             console.error("Error: ", e);
             toast("更新失败，请检查网络", 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = "更新进度";
+            submitBtn.textContent = "更新进度";
         }
     }
 
     // ============================================================
-    // Live leaderboard
+    // Live data
     // ============================================================
     onSnapshot(query(collection(db, COLLECTION_NAME)), (snapshot) => {
-        const users = [];
-        snapshot.forEach((doc) => users.push({ id: doc.id, ...doc.data() }));
-        renderLeaderboard(users);
+        users = [];
+        snapshot.forEach((doc) => users.push({ id: doc.id, ...doc.data({ serverTimestamps: 'estimate' }) }));
+        loaded = true;
+        renderAll();
+    }, (err) => {
+        console.error(err);
+        $('leaderboard-list').innerHTML = '<div class="empty">加载失败，请刷新页面</div>';
     });
 
-    function toMillis(ts) {
-        if (!ts) return Number.MAX_SAFE_INTEGER;
-        if (typeof ts.toMillis === 'function') return ts.toMillis();
-        if (ts.seconds) return ts.seconds * 1000;
-        return Number.MAX_SAFE_INTEGER;
+    // Keep "x 分钟前" labels fresh without re-rendering
+    setInterval(() => {
+        document.querySelectorAll('[data-ts]').forEach(el => {
+            el.textContent = relTime(Number(el.dataset.ts)) + (el.dataset.suffix || '');
+        });
+    }, 60000);
+
+    function renderAll() {
+        if (!loaded) return;
+        renderStats();
+        renderNameList();
+        renderMe();
+        renderRecent();
+        renderLeaderboard();
+        renderChapterStates();
+        firstRender = false;
     }
 
-    function renderLeaderboard(users) {
-        const listContainer = document.getElementById('leaderboard-list');
-        listContainer.innerHTML = '';
+    function renderStats() {
+        const n = users.length;
+        const finished = users.filter(u => u.chapters >= MAX).length;
+        const avg = n ? Math.round(users.reduce((s, u) => s + Math.min(u.chapters / MAX, 1), 0) / n * 100) : 0;
+        $('stat-readers').textContent = n;
+        $('stat-finished').textContent = finished;
+        $('stat-avg').textContent = `${avg}%`;
+    }
+
+    function renderNameList() {
+        $('name-list').innerHTML = users
+            .map(u => `<option value="${escapeHtml(u.name)}"></option>`).join('');
+    }
+
+    function renderMe() {
+        const hint = $('me-hint');
+        const link = $('continue-link');
+        const name = nameInput.value.trim();
+        const me = findMe();
+
+        if (!name) {
+            hint.hidden = true;
+        } else if (me) {
+            const when = relTime(lastActive(me));
+            hint.innerHTML = me.chapters >= MAX
+                ? `🎉 你已经读完了${escapeHtml(activeBook.zh)}！`
+                : `欢迎回来！你目前读到第 <b>${me.chapters}</b> 章${when ? ` · ${when}更新` : ''}`;
+            hint.hidden = false;
+        } else {
+            const similar = users.find(u => u.name.trim().toLowerCase() === name.toLowerCase());
+            if (similar) {
+                hint.innerHTML = `你是 <button type="button" id="use-similar">${escapeHtml(similar.name)}</button> 吗？名字要完全一样哦`;
+                hint.querySelector('#use-similar').addEventListener('click', () => {
+                    nameInput.value = similar.name;
+                    renderAll();
+                });
+            } else {
+                hint.innerHTML = '新朋友 ✨ 提交后就会出现在排行榜上';
+            }
+            hint.hidden = false;
+        }
+
+        if (me && me.chapters < MAX) {
+            const next = me.chapters + 1;
+            link.href = chapterUrl(activeBookKey, next);
+            link.textContent = `继续阅读 · 第 ${next} 章 →`;
+            link.hidden = false;
+        } else if (!me) {
+            link.href = chapterUrl(activeBookKey, 1);
+            link.textContent = `开始阅读 · 第 1 章 →`;
+            link.hidden = false;
+        } else {
+            link.hidden = true;
+        }
+    }
+
+    function renderRecent() {
+        const wrap = $('recent');
+        const recent = users
+            .map(u => ({ u, ms: lastActive(u) }))
+            .filter(x => x.ms)
+            .sort((a, b) => b.ms - a.ms)
+            .slice(0, 5);
+
+        if (recent.length === 0) { wrap.hidden = true; return; }
+        wrap.hidden = false;
+        $('recent-chips').innerHTML = recent.map(({ u, ms }) => `
+            <span class="chip">
+                <span class="dot ${isFresh(ms) ? 'fresh' : ''}"></span>
+                ${escapeHtml(u.name)}
+                <span class="chip-time" data-ts="${ms}">${relTime(ms)}</span>
+            </span>`).join('');
+    }
+
+    function renderLeaderboard() {
+        const list = $('leaderboard-list');
 
         if (users.length === 0) {
-            listContainer.innerHTML = '<div class="loading">还没有人打卡，做第一个吧 ✨</div>';
+            list.innerHTML = '<div class="empty">还没有人打卡，做第一个吧 ✨</div>';
             return;
         }
 
-        users.sort((a, b) => {
+        const sorted = [...users].sort((a, b) => {
             if (b.chapters !== a.chapters) return b.chapters - a.chapters;
-            const aLast = toMillis(a.lastUpdatedAt);
-            const bLast = toMillis(b.lastUpdatedAt);
+            const aLast = sortMs(a.lastUpdatedAt);
+            const bLast = sortMs(b.lastUpdatedAt);
             if (aLast !== bLast) return aLast - bLast;
-            return toMillis(a.createdAt) - toMillis(b.createdAt);
+            return sortMs(a.createdAt) - sortMs(b.createdAt);
         });
 
-        const max = activeBook.chapters;
+        const myName = nameInput.value.trim();
+        list.classList.toggle('animate-in', firstRender);
 
-        users.forEach((user, idx) => {
-            const percentage = Math.min((user.chapters / max) * 100, 100);
-            const isFinished = user.chapters >= max;
-            const cardClass = isFinished ? 'user-card completed' : 'user-card';
-            const safeName = escapeHtml(user.name);
-            const nameDisplay = isFinished ? `${safeName} 🏆` : safeName;
-            const statusText = isFinished ? '已读完 · Finished' : `${user.chapters} / ${max}`;
+        list.innerHTML = sorted.map((user, idx) => {
+            const pct = Math.min((user.chapters / MAX) * 100, 100);
+            const done = user.chapters >= MAX;
+            const isMe = myName && user.name === myName;
+            const ms = lastActive(user);
+            const rankCls = idx < 3 ? `r${idx + 1}` : '';
+            const count = done ? '已读完 🏆' : `${user.chapters}<small> / ${MAX}</small>`;
+            const time = ms
+                ? `<span class="dot ${isFresh(ms) ? 'fresh' : ''}"></span><span data-ts="${ms}" data-suffix="更新">${relTime(ms)}更新</span>`
+                : '';
 
-            const card = document.createElement('div');
-            card.className = cardClass;
-            card.style.animationDelay = `${idx * 0.05}s`;
-            card.innerHTML = `
-                <div class="rank-row">
-                    <span class="rank-num">${idx + 1}</span>
-                    <span class="user-name">${nameDisplay}</span>
-                    <span class="chapter-count">${statusText}</span>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width: ${percentage}%"></div>
-                </div>
-            `;
-            listContainer.appendChild(card);
-        });
+            return `
+                <div class="user-card ${done ? 'completed' : ''} ${isMe ? 'is-me' : ''}" style="animation-delay:${idx * 0.04}s">
+                    <div class="rank-row">
+                        <span class="rank-num ${rankCls}">${idx + 1}</span>
+                        <div class="user-main">
+                            <div class="user-name">${escapeHtml(user.name)}${isMe ? '<span class="me-tag">我</span>' : ''}</div>
+                            <div class="user-time">${time}</div>
+                        </div>
+                        <span class="chapter-count">${count}</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width:${pct}%"></div>
+                    </div>
+                </div>`;
+        }).join('');
     }
 
-    function escapeHtml(str) {
-        return String(str).replace(/[&<>"']/g, c => ({
-            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-        }[c]));
+    function renderChapterStates() {
+        const me = findMe();
+        const read = me ? me.chapters : 0;
+        grid.querySelectorAll('.chapter-link').forEach(a => {
+            const ch = Number(a.dataset.ch);
+            a.classList.toggle('read', ch <= read);
+            a.classList.toggle('next', !!me && ch === read + 1);
+        });
     }
 </script>
 
